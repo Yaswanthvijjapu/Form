@@ -11,7 +11,7 @@ import FormSubmit from './pages/FormSubmit.jsx';
 
 function App() {
   return (
-    <div className="app bg-gray-100 min-h-screen">
+    <div >
       <Navbar />
       <Routes>
         <Route path="/" element={<Home />} />
