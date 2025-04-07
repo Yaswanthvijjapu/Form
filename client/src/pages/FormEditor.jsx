@@ -12,6 +12,14 @@ const fieldTypes = [
   { id: 'select', label: 'Dropdown' },
   { id: 'radio', label: 'Multiple Choice' },
   { id: 'checkbox', label: 'Checkbox' },
+  { id: 'date', label: 'Date' },
+  { id: 'time', label: 'Time' },
+  { id: 'file', label: 'File Upload' },
+  { id: 'phone', label: 'Phone Number' },
+  { id: 'address', label: 'Address' },
+  { id: 'url', label: 'Website URL' },
+  { id: 'rating', label: 'Rating' },
+  { id: 'signature', label: 'Signature' },
 ];
 
 function FormEditor() {
@@ -139,6 +147,75 @@ function FormEditor() {
               className="h-5 w-5 text-gray-600 border-gray-300 rounded"
             />
             <label className="ml-3 text-gray-700">{field.label}</label>
+          </div>
+        );
+      case 'date':
+        return (
+          <input
+            type="date"
+            disabled
+            className="w-full px-3 py-2 border-b border-gray-300 bg-transparent focus:outline-none"
+          />
+        );
+      case 'time':
+        return (
+          <input
+            type="time"
+            disabled
+            className="w-full px-3 py-2 border-b border-gray-300 bg-transparent focus:outline-none"
+          />
+        );
+      case 'file':
+        return (
+          <div className="w-full px-3 py-2 border border-dashed border-gray-300 rounded-md text-gray-500 text-center">
+            File Upload Placeholder
+          </div>
+        );
+      case 'phone':
+        return (
+          <input
+            type="tel"
+            placeholder={field.label}
+            disabled
+            className="w-full px-3 py-2 border-b border-gray-300 bg-transparent focus:outline-none"
+          />
+        );
+      case 'address':
+        return (
+          <textarea
+            placeholder={field.label}
+            disabled
+            className="w-full px-3 py-2 border-b border-gray-300 bg-transparent focus:outline-none h-24"
+          />
+        );
+      case 'url':
+        return (
+          <input
+            type="url"
+            placeholder={field.label}
+            disabled
+            className="w-full px-3 py-2 border-b border-gray-300 bg-transparent focus:outline-none"
+          />
+        );
+      case 'rating':
+        return (
+          <div className="flex space-x-2">
+            {[1, 2, 3, 4, 5].map((star) => (
+              <svg
+                key={star}
+                className="h-5 w-5 text-gray-400"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+              >
+                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+              </svg>
+            ))}
+          </div>
+        );
+      case 'signature':
+        return (
+          <div className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-500 text-center">
+            Signature Placeholder
           </div>
         );
       default:
