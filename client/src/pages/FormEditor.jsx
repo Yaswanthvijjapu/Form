@@ -1,17 +1,16 @@
 // client/src/pages/FormEditor.jsx
-import React, { useState, useCallback } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import useAuthStore from '../store/useAuthStore';
 import useFormStore from '../store/useFormStore';
 
 const fieldTypes = [
-  { id: 'text', label: 'Text' },
+  { id: 'text', label: 'Short Answer' },
   { id: 'email', label: 'Email' },
   { id: 'number', label: 'Number' },
-  { id: 'textarea', label: 'Textarea' },
+  { id: 'textarea', label: 'Paragraph' },
   { id: 'select', label: 'Dropdown' },
-  { id: 'radio', label: 'Radio' },
+  { id: 'radio', label: 'Multiple Choice' },
   { id: 'checkbox', label: 'Checkbox' },
 ];
 
@@ -22,38 +21,16 @@ function FormEditor() {
   const { createForm, error, loading } = useFormStore();
   const navigate = useNavigate();
 
-  const onDragEnd = useCallback((result) => {
-    const { source, destination } = result;
-    console.log('Drag ended:', { source, destination });
-
-    if (!destination) return;
-
-    if (source.droppableId === 'fieldTypes' && destination.droppableId === 'formFields') {
-      const newField = {
-        id: `${fields.length}-${Date.now()}`,
-        type: fieldTypes[source.index].id,
-        label: `${fieldTypes[source.index].label} Field`,
-        required: false,
-        options:
-          fieldTypes[source.index].id === 'select' || fieldTypes[source.index].id === 'radio'
-            ? ['Option 1', 'Option 2']
-            : [],
-      };
-      console.log('Adding field:', newField);
-      setFields((prevFields) => {
-        const newFields = [...prevFields];
-        newFields.splice(destination.index, 0, newField);
-        return newFields;
-      });
-    } else if (source.droppableId === 'formFields' && destination.droppableId === 'formFields') {
-      setFields((prevFields) => {
-        const newFields = [...prevFields];
-        const [movedField] = newFields.splice(source.index, 1);
-        newFields.splice(destination.index, 0, movedField);
-        return newFields;
-      });
-    }
-  }, [fields]);
+  const addField = (type) => {
+    const newField = {
+      id: `${fields.length}-${Date.now()}`,
+      type,
+      label: `${fieldTypes.find((f) => f.id === type).label} Field`,
+      required: false,
+      options: type === 'select' || type === 'radio' ? ['Option 1', 'Option 2'] : [],
+    };
+    setFields([...fields, newField]);
+  };
 
   const updateField = (id, key, value) => {
     setFields(fields.map((field) => (field.id === id ? { ...field, [key]: value } : field)));
@@ -86,7 +63,6 @@ function FormEditor() {
   };
 
   const renderFieldPreview = (field) => {
-    console.log('Rendering preview for:', field);
     switch (field.type) {
       case 'text':
         return (
@@ -94,7 +70,7 @@ function FormEditor() {
             type="text"
             placeholder={field.label}
             disabled
-            className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100"
+            className="w-full px-3 py-2 border-b border-gray-300 bg-transparent focus:outline-none"
           />
         );
       case 'email':
@@ -103,7 +79,7 @@ function FormEditor() {
             type="email"
             placeholder={field.label}
             disabled
-            className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100"
+            className="w-full px-3 py-2 border-b border-gray-300 bg-transparent focus:outline-none"
           />
         );
       case 'number':
@@ -112,7 +88,7 @@ function FormEditor() {
             type="number"
             placeholder={field.label}
             disabled
-            className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100"
+            className="w-full px-3 py-2 border-b border-gray-300 bg-transparent focus:outline-none"
           />
         );
       case 'textarea':
@@ -120,14 +96,14 @@ function FormEditor() {
           <textarea
             placeholder={field.label}
             disabled
-            className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100 h-24"
+            className="w-full px-3 py-2 border-b border-gray-300 bg-transparent focus:outline-none h-24"
           />
         );
       case 'select':
         return (
           <select
             disabled
-            className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100"
+            className="w-full px-3 py-2 border-b border-gray-300 bg-transparent focus:outline-none"
           >
             <option value="">{field.label}</option>
             {field.options.map((option, idx) => (
@@ -139,7 +115,7 @@ function FormEditor() {
         );
       case 'radio':
         return (
-          <div className="space-y-2">
+          <div className="space-y-4">
             {field.options.map((option, idx) => (
               <div key={idx} className="flex items-center">
                 <input
@@ -147,9 +123,9 @@ function FormEditor() {
                   name={field.id}
                   value={option}
                   disabled
-                  className="h-4 w-4 text-indigo-600 border-gray-300"
+                  className="h-5 w-5 text-gray-600 border-gray-300"
                 />
-                <label className="ml-2 text-sm text-gray-700">{option}</label>
+                <label className="ml-3 text-gray-700">{option}</label>
               </div>
             ))}
           </div>
@@ -160,9 +136,9 @@ function FormEditor() {
             <input
               type="checkbox"
               disabled
-              className="h-4 w-4 text-indigo-600 border-gray-300 rounded"
+              className="h-5 w-5 text-gray-600 border-gray-300 rounded"
             />
-            <label className="ml-2 text-sm text-gray-700">{field.label}</label>
+            <label className="ml-3 text-gray-700">{field.label}</label>
           </div>
         );
       default:
@@ -171,172 +147,123 @@ function FormEditor() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto mt-10 p-6 bg-white rounded-lg shadow-md flex space-x-6">
-      <DragDropContext onDragEnd={onDragEnd}>
-        {/* Sidebar */}
-        <div className="w-1/4">
-          <h2 className="text-lg font-semibold mb-4">Field Types</h2>
-          <Droppable droppableId="fieldTypes" isDropDisabled={true}>
-            {(provided) => (
-              <div
-                ref={provided.innerRef}
-                {...provided.droppableProps}
-                className="space-y-2 p-2"
-              >
-                {fieldTypes.map((field, index) => (
-                  <Draggable key={field.id} draggableId={field.id} index={index}>
-                    {(provided, snapshot) => (
-                      <div
-                        ref={provided.innerRef}
-                        {...provided.draggableProps}
-                        {...provided.dragHandleProps}
-                        className={`p-2 bg-gray-200 rounded-md text-center cursor-move transition-all duration-200 ${
-                          snapshot.isDragging
-                            ? 'shadow-lg scale-105 opacity-80 bg-indigo-100 border-2 border-indigo-500'
-                            : 'shadow-sm hover:bg-gray-300'
-                        }`}
-                      >
-                        {field.label}
-                      </div>
-                    )}
-                  </Draggable>
-                ))}
-                {provided.placeholder}
-              </div>
-            )}
-          </Droppable>
+    <div className="max-w-3xl mx-auto mt-10 bg-white rounded-lg shadow-sm">
+      <form onSubmit={handleSubmit}>
+        {/* Form Header */}
+        <div className="border-t-8 border-purple-600 rounded-t-lg p-6">
+          <input
+            type="text"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            className="w-full text-2xl font-semibold text-gray-800 border-b border-gray-300 focus:outline-none focus:border-purple-600 bg-transparent"
+            placeholder="Untitled Form"
+            required
+          />
+          <p className="text-gray-500 mt-2">Form description (optional)</p>
         </div>
 
-        {/* Form Area */}
-        <div className="w-3/4">
-          <h1 className="text-2xl font-bold mb-6">Create a New Form</h1>
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div>
-              <label htmlFor="title" className="block text-sm font-medium text-gray-700">
-                Form Title
-              </label>
-              <input
-                type="text"
-                id="title"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                placeholder="Enter form title"
-                required
-              />
-            </div>
-
-            <Droppable droppableId="formFields">
-              {(provided, snapshot) => (
-                <div
-                  ref={provided.innerRef}
-                  {...provided.droppableProps}
-                  className={`min-h-[200px] p-4 border border-dashed border-gray-300 rounded-md space-y-6 transition-colors duration-200 ${
-                    snapshot.isDraggingOver ? 'bg-green-50 border-green-400' : ''
-                  }`}
-                >
-                  {fields.length === 0 && (
-                    <p className="text-gray-500 text-center">Drag field types here to add them</p>
-                  )}
-                  {fields.map((field, index) => (
-                    <Draggable key={field.id} draggableId={field.id} index={index}>
-                      {(provided, snapshot) => (
-                        <div
-                          ref={provided.innerRef}
-                          {...provided.draggableProps}
-                          {...provided.dragHandleProps}
-                          className={`bg-gray-50 border rounded-md p-4 flex space-x-4 items-start transition-all duration-200 ${
-                            snapshot.isDragging
-                              ? 'shadow-xl scale-102 opacity-75 bg-indigo-50 border-2 border-indigo-600'
-                              : 'shadow-md hover:shadow-lg'
-                          }`}
-                        >
-                          {/* Field Preview */}
-                          <div className="flex-1">
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
-                              {field.label}{' '}
-                              {field.required && <span className="text-red-500">*</span>}
-                            </label>
-                            {renderFieldPreview(field)}
-                          </div>
-
-                          {/* Field Controls */}
-                          <div className="w-1/3 space-y-2">
-                            <input
-                              type="text"
-                              value={field.label}
-                              onChange={(e) => updateField(field.id, 'label', e.target.value)}
-                              className="w-full px-2 py-1 border border-gray-300 rounded-md text-sm"
-                              placeholder="Field label"
-                            />
-                            <select
-                              value={field.type}
-                              onChange={(e) => updateField(field.id, 'type', e.target.value)}
-                              className="w-full px-2 py-1 border border-gray-300 rounded-md text-sm"
-                            >
-                              <option value="text">Text</option>
-                              <option value="email">Email</option>
-                              <option value="number">Number</option>
-                              <option value="textarea">Textarea</option>
-                              <option value="select">Dropdown</option>
-                              <option value="radio">Radio</option>
-                              <option value="checkbox">Checkbox</option>
-                            </select>
-                            {(field.type === 'select' || field.type === 'radio') && (
-                              <div>
-                                <label className="block text-sm font-medium text-gray-700">
-                                  Options (comma-separated)
-                                </label>
-                                <input
-                                  type="text"
-                                  value={field.options.join(', ')}
-                                  onChange={(e) =>
-                                    updateOptions(field.id, e.target.value.split(', '))
-                                  }
-                                  className="w-full px-2 py-1 border border-gray-300 rounded-md text-sm"
-                                  placeholder="e.g., Option 1, Option 2"
-                                />
-                              </div>
-                            )}
-                            <div className="flex items-center">
-                              <input
-                                type="checkbox"
-                                checked={field.required}
-                                onChange={(e) =>
-                                  updateField(field.id, 'required', e.target.checked)
-                                }
-                                className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-                              />
-                              <label className="ml-2 text-sm text-gray-700">Required</label>
-                            </div>
-                            <button
-                              type="button"
-                              onClick={() => removeField(field.id)}
-                              className="text-red-600 hover:underline text-sm"
-                            >
-                              Remove
-                            </button>
-                          </div>
-                        </div>
-                      )}
-                    </Draggable>
-                  ))}
-                  {provided.placeholder}
-                </div>
-              )}
-            </Droppable>
-
-            {error && <p className="text-red-500 text-sm">{error}</p>}
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full py-2 px-4 bg-indigo-600 text-white font-semibold rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:bg-indigo-400"
+        {/* Fields */}
+        <div className="p-6 space-y-6">
+          {fields.map((field) => (
+            <div
+              key={field.id}
+              className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow"
             >
-              {loading ? 'Saving...' : 'Save Form'}
-            </button>
-          </form>
+              <div className="flex flex-col space-y-4">
+                {/* Field Preview */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">
+                    {field.label}{' '}
+                    {field.required && <span className="text-red-500">*</span>}
+                  </label>
+                  <div className="mt-2">{renderFieldPreview(field)}</div>
+                </div>
+
+                {/* Field Controls */}
+                <div className="border-t border-gray-200 pt-4">
+                  <input
+                    type="text"
+                    value={field.label}
+                    onChange={(e) => updateField(field.id, 'label', e.target.value)}
+                    className="w-full px-2 py-1 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-purple-500"
+                    placeholder="Field label"
+                  />
+                  <select
+                    value={field.type}
+                    onChange={(e) => updateField(field.id, 'type', e.target.value)}
+                    className="w-full mt-2 px-2 py-1 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-purple-500"
+                  >
+                    {fieldTypes.map((type) => (
+                      <option key={type.id} value={type.id}>
+                        {type.label}
+                      </option>
+                    ))}
+                  </select>
+                  {(field.type === 'select' || field.type === 'radio') && (
+                    <div className="mt-2">
+                      <label className="block text-sm font-medium text-gray-700">
+                        Options (comma-separated)
+                      </label>
+                      <input
+                        type="text"
+                        value={field.options.join(', ')}
+                        onChange={(e) => updateOptions(field.id, e.target.value.split(', '))}
+                        className="w-full px-2 py-1 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-purple-500"
+                        placeholder="e.g., Option 1, Option 2"
+                      />
+                    </div>
+                  )}
+                  <div className="flex items-center justify-between mt-2">
+                    <div className="flex items-center">
+                      <input
+                        type="checkbox"
+                        checked={field.required}
+                        onChange={(e) => updateField(field.id, 'required', e.target.checked)}
+                        className="h-4 w-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500"
+                      />
+                      <label className="ml-2 text-sm text-gray-700">Required</label>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => removeField(field.id)}
+                      className="text-red-600 hover:text-red-800 text-sm"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
-      </DragDropContext>
+
+        {/* Add Field Button */}
+        <div className="p-6 flex justify-between items-center border-t border-gray-200">
+          <select
+            onChange={(e) => {
+              if (e.target.value) addField(e.target.value);
+              e.target.value = '';
+            }}
+            className="px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-purple-500"
+          >
+            <option value="">Add a field</option>
+            {fieldTypes.map((type) => (
+              <option key={type.id} value={type.id}>
+                {type.label}
+              </option>
+            ))}
+          </select>
+          <button
+            type="submit"
+            disabled={loading}
+            className="px-4 py-2 bg-purple-600 text-white font-semibold rounded-md hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:bg-purple-400"
+          >
+            {loading ? 'Saving...' : 'Save Form'}
+          </button>
+        </div>
+
+        {error && <p className="text-red-500 text-sm p-6">{error}</p>}
+      </form>
     </div>
   );
 }
