@@ -9,6 +9,10 @@ const fieldTypes = [
   { id: 'text', label: 'Text' },
   { id: 'email', label: 'Email' },
   { id: 'number', label: 'Number' },
+  { id: 'textarea', label: 'Textarea' },
+  { id: 'select', label: 'Dropdown' },
+  { id: 'radio', label: 'Radio' },
+  { id: 'checkbox', label: 'Checkbox' },
 ];
 
 function FormEditor() {
@@ -20,6 +24,7 @@ function FormEditor() {
 
   const onDragEnd = useCallback((result) => {
     const { source, destination } = result;
+    console.log('Drag ended:', { source, destination });
 
     if (!destination) return;
 
@@ -29,8 +34,12 @@ function FormEditor() {
         type: fieldTypes[source.index].id,
         label: `${fieldTypes[source.index].label} Field`,
         required: false,
+        options:
+          fieldTypes[source.index].id === 'select' || fieldTypes[source.index].id === 'radio'
+            ? ['Option 1', 'Option 2']
+            : [],
       };
-      console.log('Adding field:', newField); // Debug log
+      console.log('Adding field:', newField);
       setFields((prevFields) => {
         const newFields = [...prevFields];
         newFields.splice(destination.index, 0, newField);
@@ -48,6 +57,10 @@ function FormEditor() {
 
   const updateField = (id, key, value) => {
     setFields(fields.map((field) => (field.id === id ? { ...field, [key]: value } : field)));
+  };
+
+  const updateOptions = (id, options) => {
+    setFields(fields.map((field) => (field.id === id ? { ...field, options } : field)));
   };
 
   const removeField = (id) => {
@@ -73,7 +86,7 @@ function FormEditor() {
   };
 
   const renderFieldPreview = (field) => {
-    console.log('Rendering preview for:', field); // Debug log
+    console.log('Rendering preview for:', field);
     switch (field.type) {
       case 'text':
         return (
@@ -101,6 +114,56 @@ function FormEditor() {
             disabled
             className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100"
           />
+        );
+      case 'textarea':
+        return (
+          <textarea
+            placeholder={field.label}
+            disabled
+            className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100 h-24"
+          />
+        );
+      case 'select':
+        return (
+          <select
+            disabled
+            className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100"
+          >
+            <option value="">{field.label}</option>
+            {field.options.map((option, idx) => (
+              <option key={idx} value={option}>
+                {option}
+              </option>
+            ))}
+          </select>
+        );
+      case 'radio':
+        return (
+          <div className="space-y-2">
+            {field.options.map((option, idx) => (
+              <div key={idx} className="flex items-center">
+                <input
+                  type="radio"
+                  name={field.id}
+                  value={option}
+                  disabled
+                  className="h-4 w-4 text-indigo-600 border-gray-300"
+                />
+                <label className="ml-2 text-sm text-gray-700">{option}</label>
+              </div>
+            ))}
+          </div>
+        );
+      case 'checkbox':
+        return (
+          <div className="flex items-center">
+            <input
+              type="checkbox"
+              disabled
+              className="h-4 w-4 text-indigo-600 border-gray-300 rounded"
+            />
+            <label className="ml-2 text-sm text-gray-700">{field.label}</label>
+          </div>
         );
       default:
         return <p className="text-red-500">Unknown field type</p>;
@@ -214,7 +277,27 @@ function FormEditor() {
                               <option value="text">Text</option>
                               <option value="email">Email</option>
                               <option value="number">Number</option>
+                              <option value="textarea">Textarea</option>
+                              <option value="select">Dropdown</option>
+                              <option value="radio">Radio</option>
+                              <option value="checkbox">Checkbox</option>
                             </select>
+                            {(field.type === 'select' || field.type === 'radio') && (
+                              <div>
+                                <label className="block text-sm font-medium text-gray-700">
+                                  Options (comma-separated)
+                                </label>
+                                <input
+                                  type="text"
+                                  value={field.options.join(', ')}
+                                  onChange={(e) =>
+                                    updateOptions(field.id, e.target.value.split(', '))
+                                  }
+                                  className="w-full px-2 py-1 border border-gray-300 rounded-md text-sm"
+                                  placeholder="e.g., Option 1, Option 2"
+                                />
+                              </div>
+                            )}
                             <div className="flex items-center">
                               <input
                                 type="checkbox"
