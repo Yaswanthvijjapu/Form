@@ -13,7 +13,6 @@ function Navbar() {
   };
 
   return (
-    
     <nav className="bg-indigo-600 p-4 text-white flex justify-between items-center">
       <div>
         <Link to="/" className="text-lg font-bold hover:underline">
