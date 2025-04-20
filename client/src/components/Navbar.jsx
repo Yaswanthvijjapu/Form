@@ -43,7 +43,7 @@ function Navbar() {
             <Link to="/login" className="hover:underline">
               Login
             </Link>
-            <Link to="/register" className="hover:underline">
+            <Link to="/register"  className="hover:underline">
               Register
             </Link>
           </>
