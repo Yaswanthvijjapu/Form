@@ -7,16 +7,13 @@ const errorMiddleware = require('./middleware/errorMiddleware');
 
 const app = express();
 
-// Middleware
-app.use(cors()); // Allow frontend to connect
-app.use(express.json()); // Parse JSON bodies
+app.use(cors());
+app.use(express.json());
 
-// Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/forms', formRoutes);
 app.use('/api/responses', responseRoutes);
 
-// Error handling middleware
 app.use(errorMiddleware);
 
 module.exports = app;

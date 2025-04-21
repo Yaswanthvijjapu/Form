@@ -1,25 +1,25 @@
+// server/controllers/formController.js
 const Form = require('../models/Form');
 const { v4: uuidv4 } = require('uuid');
+const generateShareLink = require('../utils/generateShareLink');
 
-// Create a new form
 const createForm = async (req, res, next) => {
-    const { title, fields } = req.body;
-    try {
-      const form = new Form({
-        title,
-        fields,
-        userId: req.user.user.id, // Correctly access nested id
-        shareLink: uuidv4(),
-      });
-      await form.save();
-      res.status(201).json(form);
-    } catch (error) {
-      next(error);
-    }
-  };
+  const { title, fields } = req.body;
+  try {
+    const shareLink = generateShareLink();
+    const form = new Form({
+      title,
+      fields,
+      userId: req.user.user.id,
+      shareLink,
+    });
+    await form.save();
+    res.status(201).json(form);
+  } catch (error) {
+    next(error);
+  }
+};
 
-
-// Get all forms for the authenticated user
 const getForms = async (req, res, next) => {
   try {
     const forms = await Form.find({ userId: req.user.user.id });
@@ -37,6 +37,18 @@ const getFormById = async (req, res, next) => {
     }
     if (form.userId.toString() !== req.user.user.id) {
       return res.status(403).json({ error: 'Not authorized' });
+    }
+    res.json(form);
+  } catch (error) {
+    next(error);
+  }
+};
+
+const getFormByShareLink = async (req, res, next) => {
+  try {
+    const form = await Form.findOne({ shareLink: req.params.shareLink });
+    if (!form) {
+      return res.status(404).json({ error: 'Form not found' });
     }
     res.json(form);
   } catch (error) {
@@ -79,5 +91,4 @@ const deleteForm = async (req, res, next) => {
   }
 };
 
-
-module.exports = { createForm, getForms, getFormById, updateForm, deleteForm };
+module.exports = { createForm, getForms, getFormById, getFormByShareLink, updateForm, deleteForm };
