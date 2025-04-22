@@ -1,51 +1,54 @@
 // client/src/pages/Herodashboard.jsx
 import React, { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import useAuthStore from '../store/useAuthStore';
+import { useNavigate, Link } from 'react-router-dom';
 import useFormStore from '../store/useFormStore';
+import useAuthStore from '../store/useAuthStore'; // Add this import
 
 function Herodashboard() {
-  const { isAuthenticated, token } = useAuthStore();
   const { forms, fetchForms, loading, error } = useFormStore();
   const navigate = useNavigate();
+  const { token } = useAuthStore.getState(); // Use the imported store
 
   useEffect(() => {
-    if (!isAuthenticated || !token) {
-      console.warn('Herodashboard - Unauthorized, redirecting to login');
-      navigate('/login');
-    } else {
-      console.log('Herodashboard - Fetching forms with token:', token);
-      fetchForms(token).catch((err) => console.error('Fetch error:', err));
-    }
-  }, [isAuthenticated, token, fetchForms, navigate]);
+    if (token) fetchForms(token);
+  }, [token]);
 
-  console.log('Herodashboard - Rendered with forms:', forms, 'loading:', loading, 'error:', error);
+  if (loading) return <p className="p-6 text-gray-600">Loading forms...</p>;
+  if (error) return <p className="p-6 text-red-500">Error: {error}</p>;
 
   return (
     <div className="max-w-4xl mx-auto mt-10 p-6 bg-white rounded-lg shadow-md">
-      <h1 className="text-2xl font-bold mb-6">Your Forms</h1>
-      {loading && <p className="text-gray-600">Loading forms...</p>}
-      {error && <p className="text-red-500">{error}</p>}
-      {!loading && !error && forms.length === 0 ? (
+      <h1 className="text-2xl font-semibold mb-6">Your Forms</h1>
+      {forms.length === 0 ? (
         <p className="text-gray-600">No forms created yet.</p>
       ) : (
         <ul className="space-y-4">
           {forms.map((form) => (
-            <li key={form._id} className="p-4 border rounded-md">
-              <h2 className="text-lg font-semibold">{form.title}</h2>
-              <button
-                onClick={() => navigate(`/forms/${form._id}`)}
-                className="text-blue-600 hover:underline"
-              >
-                View Form
-              </button>
+            <li key={form._id} className="border p-4 rounded-md shadow-sm">
+              <div className="flex justify-between items-center">
+                <span className="text-lg font-medium">{form.title}</span>
+                <div>
+                  <Link
+                    to={`/forms/${form._id}`}
+                    className="mr-4 text-blue-600 hover:underline"
+                  >
+                    View Form
+                  </Link>
+                  <Link
+                    to={`/responses/${form._id}`}
+                    className="text-green-600 hover:underline"
+                  >
+                    View Responses
+                  </Link>
+                </div>
+              </div>
             </li>
           ))}
         </ul>
       )}
       <button
         onClick={() => navigate('/editor')}
-        className="mt-6 px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700"
+        className="mt-6 w-full py-2 px-4 bg-purple-600 text-white rounded-md hover:bg-purple-700"
       >
         Create New Form
       </button>

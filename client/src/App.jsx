@@ -8,8 +8,9 @@ import Login from './pages/Login.jsx';
 import Register from './pages/Register.jsx';
 import FormEditor from './pages/FormEditor.jsx';
 import FormSubmit from './pages/FormSubmit.jsx';
-import ViewForm from './pages/ViewForm.jsx'; // Add this import
-import PrivateRoute from './components/PrivateRoute'; // Add this import
+import ViewForm from './pages/ViewForm.jsx';
+import ViewResponses from './pages/ViewResponses.jsx'; // New import
+import PrivateRoute from './components/PrivateRoute';
 
 function App() {
   return (
@@ -35,8 +36,17 @@ function App() {
             </PrivateRoute>
           }
         />
-        <Route path="/submit/:formId" element={<FormSubmit />} /> {/* Consistent path */}
-        <Route path="/forms/:id" element={<ViewForm />} /> {/* Add this route */}
+        <Route path="/form-submit/:formId" element={<FormSubmit />} />
+        <Route path="/form-submit/share/:shareLink" element={<FormSubmit />} />
+        <Route path="/forms/:id" element={<ViewForm />} />
+        <Route
+          path="/responses/:formId"
+          element={
+            <PrivateRoute>
+              <ViewResponses />
+            </PrivateRoute>
+          }
+        />
       </Routes>
     </div>
   );

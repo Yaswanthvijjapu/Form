@@ -23,3 +23,8 @@ export const getFormById = async (id, token) => {
   });
   return response.data;
 };
+
+export const getFormByShareLink = async (shareLink) => {
+  const response = await axios.get(`${API_URL}/forms/share/${shareLink}`);
+  return response.data;
+};

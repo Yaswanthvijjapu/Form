@@ -1,23 +1,23 @@
 // client/src/store/useFormStore.js
 import { create } from 'zustand';
-import { getForms, createForm as apiCreateForm, getFormById } from '../api/formApi';
+import { getForms, createForm as apiCreateForm, getFormById, getFormByShareLink } from '../api/formApi';
+import { getResponses as apiGetResponses } from '../api/responseApi'; // New import
 import useAuthStore from './useAuthStore';
 
 const useFormStore = create((set) => ({
   forms: [],
   form: null,
+  responses: [],
   loading: false,
   error: null,
   fetchForms: async (token) => {
     set({ loading: true, error: null });
     try {
-      console.log('Fetching forms with token:', token);
       const data = await getForms(token);
-      console.log('Fetched forms:', data);
       set({ forms: data, loading: false });
     } catch (err) {
       set({ error: err.response?.data?.error || 'Failed to fetch forms', loading: false });
-      console.error('Fetch forms error:', err.response?.data || err.message);
+      console.error('Fetch forms error:', err);
     }
   },
   createForm: async (formData, token) => {
@@ -33,14 +33,33 @@ const useFormStore = create((set) => ({
   fetchFormById: async (id) => {
     set({ loading: true, error: null });
     try {
-      const { token } = useAuthStore.getState(); // Get current token
-      if (!token) throw new Error('No authentication token available');
-      console.log('Fetching form with id:', id, 'and token:', token);
-      const data = await getFormById(id, token); // Pass token
+      const { token } = useAuthStore.getState();
+      const data = await getFormById(id, token);
       set({ form: data, loading: false });
     } catch (err) {
       set({ error: err.response?.data?.error || 'Failed to fetch form', loading: false });
-      console.error('Fetch form error:', err.response?.data || err.message);
+      console.error('Fetch form error:', err);
+    }
+  },
+  fetchFormByShareLink: async (shareLink) => {
+    set({ loading: true, error: null });
+    try {
+      const data = await getFormByShareLink(shareLink);
+      set({ form: data, loading: false });
+    } catch (err) {
+      set({ error: err.response?.data?.error || 'Failed to fetch form by share link', loading: false });
+      console.error('Fetch form by share link error:', err);
+    }
+  },
+  fetchResponses: async (formId) => {
+    set({ loading: true, error: null });
+    try {
+      const { token } = useAuthStore.getState();
+      const data = await apiGetResponses(formId, token);
+      set({ responses: data, loading: false });
+    } catch (err) {
+      set({ error: err.response?.data?.error || 'Failed to fetch responses', loading: false });
+      console.error('Fetch responses error:', err);
     }
   },
 }));
