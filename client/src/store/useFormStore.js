@@ -1,7 +1,7 @@
 // client/src/store/useFormStore.js
 import { create } from 'zustand';
-import { getForms, createForm as apiCreateForm, getFormById, getFormByShareLink } from '../api/formApi';
-import { getResponses as apiGetResponses } from '../api/responseApi'; // New import
+import { getForms, createForm as apiCreateForm, getFormById, getFormByShareLink, deleteForm as apiDeleteForm, updateForm as apiUpdateForm } from '../api/formApi';
+import { getResponses as apiGetResponses } from '../api/responseApi';
 import useAuthStore from './useAuthStore';
 
 const useFormStore = create((set) => ({
@@ -60,6 +60,35 @@ const useFormStore = create((set) => ({
     } catch (err) {
       set({ error: err.response?.data?.error || 'Failed to fetch responses', loading: false });
       console.error('Fetch responses error:', err);
+    }
+  },
+  deleteForm: async (formId, token) => {
+    set({ loading: true, error: null });
+    try {
+      await apiDeleteForm(formId, token);
+      set((state) => ({
+        forms: state.forms.filter((form) => form._id !== formId),
+        loading: false,
+      }));
+    } catch (err) {
+      set({ error: err.response?.data?.error || 'Failed to delete form', loading: false });
+      console.error('Delete form error:', err);
+    }
+  },
+  updateForm: async (formId, formData, token) => {
+    set({ loading: true, error: null });
+    try {
+      const updatedForm = await apiUpdateForm(formId, formData, token);
+      set((state) => ({
+        forms: state.forms.map((form) =>
+          form._id === formId ? { ...form, ...updatedForm } : form
+        ),
+        form: updatedForm,
+        loading: false,
+      }));
+    } catch (err) {
+      set({ error: err.response?.data?.error || 'Failed to update form', loading: false });
+      console.error('Update form error:', err);
     }
   },
 }));

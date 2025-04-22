@@ -9,7 +9,7 @@ import Register from './pages/Register.jsx';
 import FormEditor from './pages/FormEditor.jsx';
 import FormSubmit from './pages/FormSubmit.jsx';
 import ViewForm from './pages/ViewForm.jsx';
-import ViewResponses from './pages/ViewResponses.jsx'; // New import
+import ViewResponses from './pages/ViewResponses.jsx';
 import PrivateRoute from './components/PrivateRoute';
 
 function App() {
@@ -29,7 +29,7 @@ function App() {
           }
         />
         <Route
-          path="/editor"
+          path="/editor/:formId?"
           element={
             <PrivateRoute>
               <FormEditor />

@@ -2,16 +2,28 @@
 import React, { useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import useFormStore from '../store/useFormStore';
-import useAuthStore from '../store/useAuthStore'; // Add this import
+import useAuthStore from '../store/useAuthStore';
 
 function Herodashboard() {
-  const { forms, fetchForms, loading, error } = useFormStore();
+  const { forms, fetchForms, loading, error, deleteForm } = useFormStore();
   const navigate = useNavigate();
-  const { token } = useAuthStore.getState(); // Use the imported store
+  const { token } = useAuthStore.getState();
 
   useEffect(() => {
     if (token) fetchForms(token);
   }, [token]);
+
+  const handleDelete = async (formId) => {
+    if (window.confirm('Are you sure you want to delete this form?')) {
+      try {
+        await deleteForm(formId, token);
+        fetchForms(token); // Refresh the list
+      } catch (err) {
+        console.error('Delete error:', err);
+        alert('Failed to delete the form. Please try again.');
+      }
+    }
+  };
 
   if (loading) return <p className="p-6 text-gray-600">Loading forms...</p>;
   if (error) return <p className="p-6 text-red-500">Error: {error}</p>;
@@ -36,10 +48,16 @@ function Herodashboard() {
                   </Link>
                   <Link
                     to={`/responses/${form._id}`}
-                    className="text-green-600 hover:underline"
+                    className="mr-4 text-green-600 hover:underline"
                   >
                     View Responses
                   </Link>
+                  <button
+                    onClick={() => handleDelete(form._id)}
+                    className="text-red-600 hover:underline"
+                  >
+                    Delete
+                  </button>
                 </div>
               </div>
             </li>

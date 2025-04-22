@@ -28,3 +28,17 @@ export const getFormByShareLink = async (shareLink) => {
   const response = await axios.get(`${API_URL}/forms/share/${shareLink}`);
   return response.data;
 };
+
+export const deleteForm = async (formId, token) => {
+  const response = await axios.delete(`${API_URL}/forms/${formId}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return response.data;
+};
+
+export const updateForm = async (formId, formData, token) => {
+  const response = await axios.put(`${API_URL}/forms/${formId}`, formData, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return response.data;
+};
