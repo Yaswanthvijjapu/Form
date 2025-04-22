@@ -15,9 +15,11 @@ function Herodashboard() {
       navigate('/login');
     } else {
       console.log('Herodashboard - Fetching forms with token:', token);
-      fetchForms(token);
+      fetchForms(token).catch((err) => console.error('Fetch error:', err));
     }
   }, [isAuthenticated, token, fetchForms, navigate]);
+
+  console.log('Herodashboard - Rendered with forms:', forms, 'loading:', loading, 'error:', error);
 
   return (
     <div className="max-w-4xl mx-auto mt-10 p-6 bg-white rounded-lg shadow-md">

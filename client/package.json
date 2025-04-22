@@ -18,6 +18,8 @@
     "react-beautiful-dnd": "^13.1.1",
     "react-dom": "^18.2.0",
     "react-router-dom": "^7.4.1",
+    "react-signature-canvas": "^1.1.0-alpha.2",
+    "signature_pad": "^5.0.7",
     "tailwindcss": "^4.1.1",
     "zustand": "^5.0.3"
   },

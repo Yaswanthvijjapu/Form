@@ -1,65 +1,46 @@
 // client/src/store/useFormStore.js
 import { create } from 'zustand';
-import axios from 'axios';
+import { getForms, createForm as apiCreateForm, getFormById } from '../api/formApi';
+import useAuthStore from './useAuthStore';
 
 const useFormStore = create((set) => ({
   forms: [],
   form: null,
   loading: false,
   error: null,
+  fetchForms: async (token) => {
+    set({ loading: true, error: null });
+    try {
+      console.log('Fetching forms with token:', token);
+      const data = await getForms(token);
+      console.log('Fetched forms:', data);
+      set({ forms: data, loading: false });
+    } catch (err) {
+      set({ error: err.response?.data?.error || 'Failed to fetch forms', loading: false });
+      console.error('Fetch forms error:', err.response?.data || err.message);
+    }
+  },
   createForm: async (formData, token) => {
     set({ loading: true, error: null });
     try {
-      console.log('createForm - Sending token:', token);
-      const response = await axios.post(
-        'http://localhost:5000/api/forms',
-        formData,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-        }
-      );
-      set((state) => ({
-        forms: [...state.forms, response.data],
-        loading: false,
-      }));
-      return response.data;
-    } catch (error) {
-      const errorMsg = error.response?.data?.error || 'Failed to create form';
-      console.error('createForm error:', errorMsg);
-      set({ error: errorMsg, loading: false });
-      throw error;
+      const newForm = await apiCreateForm(formData, token);
+      set((state) => ({ forms: [...state.forms, newForm], loading: false }));
+    } catch (err) {
+      set({ error: err.response?.data?.error || 'Failed to create form', loading: false });
+      console.error('Create form error:', err);
     }
   },
   fetchFormById: async (id) => {
     set({ loading: true, error: null });
     try {
-      console.log('fetchFormById - Fetching form ID:', id);
-      const response = await axios.get(`http://localhost:5000/api/forms/${id}`);
-      set({ form: response.data, loading: false });
-    } catch (error) {
-      const errorMsg = error.response?.data?.error || 'Failed to fetch form';
-      console.error('fetchFormById error:', errorMsg);
-      set({ error: errorMsg, loading: false });
-      throw error;
-    }
-  },
-  fetchForms: async (token) => {
-    set({ loading: true, error: null });
-    try {
-      console.log('fetchForms - Sending token:', token);
-      const response = await axios.get('http://localhost:5000/api/forms', {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      set({ forms: response.data, loading: false });
-    } catch (error) {
-      const errorMsg = error.response?.data?.error || 'Failed to fetch forms';
-      console.error('fetchForms error:', errorMsg);
-      set({ error: errorMsg, loading: false });
+      const { token } = useAuthStore.getState(); // Get current token
+      if (!token) throw new Error('No authentication token available');
+      console.log('Fetching form with id:', id, 'and token:', token);
+      const data = await getFormById(id, token); // Pass token
+      set({ form: data, loading: false });
+    } catch (err) {
+      set({ error: err.response?.data?.error || 'Failed to fetch form', loading: false });
+      console.error('Fetch form error:', err.response?.data || err.message);
     }
   },
 }));

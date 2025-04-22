@@ -8,18 +8,35 @@ import Login from './pages/Login.jsx';
 import Register from './pages/Register.jsx';
 import FormEditor from './pages/FormEditor.jsx';
 import FormSubmit from './pages/FormSubmit.jsx';
+import ViewForm from './pages/ViewForm.jsx'; // Add this import
+import PrivateRoute from './components/PrivateRoute'; // Add this import
 
 function App() {
   return (
-    <div >
+    <div>
       <Navbar />
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/editor" element={<FormEditor />} />
-        <Route path="/submit/:formId" element={<FormSubmit />} />
+        <Route
+          path="/dashboard"
+          element={
+            <PrivateRoute>
+              <Dashboard />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/editor"
+          element={
+            <PrivateRoute>
+              <FormEditor />
+            </PrivateRoute>
+          }
+        />
+        <Route path="/submit/:formId" element={<FormSubmit />} /> {/* Consistent path */}
+        <Route path="/forms/:id" element={<ViewForm />} /> {/* Add this route */}
       </Routes>
     </div>
   );
