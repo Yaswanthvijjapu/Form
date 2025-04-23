@@ -1,4 +1,4 @@
-// src/controllers/responseController.js
+// server/controllers/responseController.js
 const Form = require('../models/Form');
 const Response = require('../models/Response');
 const { Parser } = require('json2csv');
@@ -21,19 +21,18 @@ const submitResponse = async (req, res, next) => {
   }
 };
 
-// src/controllers/responseController.js
 const getResponses = async (req, res, next) => {
-    try {
-      const form = await Form.findById(req.params.formId);
-      if (!form) {
-        return res.status(404).json({ error: 'Form not found' });
-      }
-      const responses = await Response.find({ formId: req.params.formId });
-      res.json(responses);
-    } catch (error) {
-      next(error);
+  try {
+    const form = await Form.findById(req.params.formId);
+    if (!form) {
+      return res.status(404).json({ error: 'Form not found' });
     }
-  };
+    const responses = await Response.find({ formId: req.params.formId });
+    res.json(responses);
+  } catch (error) {
+    next(error);
+  }
+};
 
 const exportResponses = async (req, res, next) => {
   try {
@@ -41,17 +40,43 @@ const exportResponses = async (req, res, next) => {
     if (!form) {
       return res.status(404).json({ error: 'Form not found' });
     }
-    const responses = await Response.find({ formId: req.params.formId });
-    const fields = form.fields.map((field, index) => ({
-      label: field.label,
-      value: `answers.${index}.value`,
-    }));
+
+    const responses = await Response.find({ formId: req.params.formId }).lean();
+    if (!responses || responses.length === 0) {
+      return res.status(404).json({ error: 'No responses found for this form' });
+    }
+
+    // Collect all unique field IDs across all responses
+    const allFieldIds = new Set();
+    responses.forEach((response) => {
+      response.answers.forEach((answer) => allFieldIds.add(answer.fieldId));
+    });
+
+    // Flatten the answers array for CSV
+    const flattenedData = responses.map((response) => {
+      const row = { submittedAt: new Date(response.submittedAt).toISOString() };
+      allFieldIds.forEach((fieldId) => {
+        const answer = response.answers.find((a) => a.fieldId === fieldId);
+        row[fieldId] = answer
+          ? Array.isArray(answer.value)
+            ? answer.value.join(', ')
+            : answer.value
+          : '';
+      });
+      return row;
+    });
+
+    // Define CSV fields
+    const fields = ['submittedAt', ...allFieldIds];
     const json2csvParser = new Parser({ fields });
-    const csv = json2csvParser.parse(responses);
+    const csv = json2csvParser.parse(flattenedData);
+
+    // Send the CSV as a downloadable file
     res.header('Content-Type', 'text/csv');
     res.attachment(`${form.title}_responses.csv`);
     res.send(csv);
   } catch (error) {
+    console.error('Export responses error:', error);
     next(error);
   }
 };
