@@ -7,42 +7,62 @@ import { submitResponse } from '../api/responseApi';
 
 function FormSubmit() {
   const { formId, shareLink } = useParams();
-  const { form, fetchFormById, fetchFormByShareLink, loading, error } = useFormStore();
+  const { form, fetchFormByShareLink, loading, error } = useFormStore();
   const sigCanvas = useRef(null);
   const [responses, setResponses] = useState({});
   const [submitSuccess, setSubmitSuccess] = useState(false);
+  const [validationErrors, setValidationErrors] = useState({});
   const navigate = useNavigate();
 
   useEffect(() => {
     if (shareLink) {
       fetchFormByShareLink(shareLink);
-    } else if (formId) {
-      const { token } = useAuthStore.getState();
-      if (token) fetchFormById(formId);
     }
-  }, [formId, shareLink, fetchFormById, fetchFormByShareLink]);
+  }, [shareLink, fetchFormByShareLink]);
 
   const handleChange = (e) => {
     setResponses({ ...responses, [e.target.name]: e.target.value });
+    setValidationErrors({ ...validationErrors, [e.target.name]: null });
   };
 
   const handleSignature = () => {
     if (sigCanvas.current) {
-      setResponses({ ...responses, signature: sigCanvas.current.toDataURL() });
+      const signatureData = sigCanvas.current.toDataURL();
+      setResponses({ ...responses, signature: signatureData });
+      setValidationErrors({ ...validationErrors, signature: null });
     }
+  };
+
+  const validateForm = () => {
+    const errors = {};
+    form.fields.forEach((field) => {
+      if (field.required) {
+        const value = responses[field.label] || responses[field.type];
+        if (!value || (typeof value === 'string' && value.trim() === '')) {
+          errors[field.label] = `${field.label} is required`;
+        } else if (field.type === 'signature' && !sigCanvas.current?.toDataURL().includes('data:image/png')) {
+          errors[field.label] = 'Signature is required';
+        }
+      }
+    });
+    return errors;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const errors = validateForm();
+    if (Object.keys(errors).length > 0) {
+      setValidationErrors(errors);
+      return;
+    }
     try {
       const responseData = {
-        formId: form._id || formId, // Use form._id if fetched, else formId
+        formId: form._id || formId,
         responses,
         shareLink: shareLink || undefined,
       };
       await submitResponse(responseData);
       setSubmitSuccess(true);
-      // Optionally redirect: navigate('/thank-you'); // Uncomment to redirect
     } catch (err) {
       console.error('Submission error:', err);
       alert('Failed to submit the form. Please try again.');
@@ -68,40 +88,60 @@ function FormSubmit() {
                 {field.label} {field.required && <span className="text-red-500">*</span>}
               </label>
               {field.type === 'signature' ? (
-                <SignatureCanvas
-                  ref={sigCanvas}
-                  onEnd={handleSignature}
-                  canvasProps={{ className: 'w-full h-32 border border-gray-300 rounded' }}
-                />
+                <>
+                  <SignatureCanvas
+                    ref={sigCanvas}
+                    onEnd={handleSignature}
+                    canvasProps={{ className: 'w-full h-32 border border-gray-300 rounded' }}
+                  />
+                  {validationErrors[field.label] && (
+                    <p className="text-red-500 text-sm mt-1">{validationErrors[field.label]}</p>
+                  )}
+                </>
               ) : field.type === 'textarea' || field.type === 'address' ? (
-                <textarea
-                  name={field.label}
-                  onChange={handleChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-600"
-                  required={field.required}
-                />
+                <>
+                  <textarea
+                    name={field.label}
+                    onChange={handleChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-600"
+                    required={field.required}
+                  />
+                  {validationErrors[field.label] && (
+                    <p className="text-red-500 text-sm mt-1">{validationErrors[field.label]}</p>
+                  )}
+                </>
               ) : field.type === 'select' ? (
-                <select
-                  name={field.label}
-                  onChange={handleChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-600"
-                  required={field.required}
-                >
-                  <option value="">Select {field.label}</option>
-                  {field.options?.map((option, idx) => (
-                    <option key={idx} value={option}>
-                      {option}
-                    </option>
-                  ))}
-                </select>
+                <>
+                  <select
+                    name={field.label}
+                    onChange={handleChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-600"
+                    required={field.required}
+                  >
+                    <option value="">Select {field.label}</option>
+                    {field.options?.map((option, idx) => (
+                      <option key={idx} value={option}>
+                        {option}
+                      </option>
+                    ))}
+                  </select>
+                  {validationErrors[field.label] && (
+                    <p className="text-red-500 text-sm mt-1">{validationErrors[field.label]}</p>
+                  )}
+                </>
               ) : (
-                <input
-                  type={field.type}
-                  name={field.label}
-                  onChange={handleChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-600"
-                  required={field.required}
-                />
+                <>
+                  <input
+                    type={field.type}
+                    name={field.label}
+                    onChange={handleChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-600"
+                    required={field.required}
+                  />
+                  {validationErrors[field.label] && (
+                    <p className="text-red-500 text-sm mt-1">{validationErrors[field.label]}</p>
+                  )}
+                </>
               )}
             </div>
           ))}
