@@ -18,3 +18,11 @@ export const getResponses = async (formId, token) => {
   });
   return response.data;
 };
+
+export const exportResponses = async (formId, token) => {
+  const response = await axios.get(`${API_URL}/responses/export/${formId}`, {
+    headers: { Authorization: `Bearer ${token}` },
+    responseType: 'blob', // Important for handling file downloads
+  });
+  return response.data;
+};

@@ -2,6 +2,7 @@
 import React, { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import useFormStore from '../store/useFormStore';
+import { exportResponses } from '../api/responseApi';
 
 function ViewResponses() {
   const { formId } = useParams();
@@ -11,6 +12,24 @@ function ViewResponses() {
     if (formId) fetchResponses(formId);
   }, [formId, fetchResponses]);
 
+  const handleExport = async () => {
+    try {
+      const { token } = useAuthStore.getState();
+      const blob = await exportResponses(formId, token);
+      const url = window.URL.createObjectURL(new Blob([blob]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `form_${formId}_responses.csv`);
+      document.body.appendChild(link);
+      link.click();
+      link.parentNode.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error('Export error:', err);
+      alert('Failed to export responses. Please try again.');
+    }
+  };
+
   if (loading) return <p className="p-6 text-gray-600">Loading responses...</p>;
   if (error) return <p className="p-6 text-red-500">Error: {error}</p>;
   if (!responses || responses.length === 0)
@@ -18,7 +37,15 @@ function ViewResponses() {
 
   return (
     <div className="max-w-4xl mx-auto mt-10 p-6 bg-white rounded-lg shadow-md">
-      <h1 className="text-2xl font-semibold mb-6">Responses for Form</h1>
+      <div className="flex justify-between items-center mb-4">
+        <h1 className="text-2xl font-semibold">Responses for Form</h1>
+        <button
+          onClick={handleExport}
+          className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+        >
+          Export to CSV
+        </button>
+      </div>
       <div className="overflow-x-auto">
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
