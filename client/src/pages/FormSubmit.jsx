@@ -69,22 +69,22 @@ function FormSubmit() {
     }
   };
 
-  if (loading) return <p className="p-6 text-gray-600">Loading form...</p>;
-  if (error) return <p className="p-6 text-red-500">Error: {error}</p>;
-  if (!form) return <p className="p-6 text-gray-600">Form not found</p>;
+  if (loading) return <p className="p-6 text-gray-600 text-center">Loading form...</p>;
+  if (error) return <p className="p-6 text-red-500 text-center">Error: {error}</p>;
+  if (!form) return <p className="p-6 text-gray-600 text-center">Form not found</p>;
 
   return (
-    <div className="max-w-2xl mx-auto mt-10 p-6 bg-white rounded-lg shadow-md">
-      <h1 className="text-2xl font-semibold mb-6">{form.title}</h1>
+    <div className="max-w-2xl mx-auto mt-10 p-6 bg-gray-50 min-h-screen">
+      <h1 className="text-3xl font-bold text-gray-800 mb-8">{form.title}</h1>
       {submitSuccess ? (
-        <p className="p-4 bg-green-100 text-green-700 rounded-md">
+        <p className="p-4 bg-green-100 text-green-700 rounded-lg text-center">
           Thank you! Your response has been submitted successfully.
         </p>
       ) : (
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-6 bg-white p-6 rounded-xl shadow-lg">
           {form.fields.map((field, index) => (
             <div key={index} className="mb-4">
-              <label className="block text-sm font-medium text-gray-700">
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
                 {field.label} {field.required && <span className="text-red-500">*</span>}
               </label>
               {field.type === 'signature' ? (
@@ -92,7 +92,7 @@ function FormSubmit() {
                   <SignatureCanvas
                     ref={sigCanvas}
                     onEnd={handleSignature}
-                    canvasProps={{ className: 'w-full h-32 border border-gray-300 rounded' }}
+                    canvasProps={{ className: 'w-full h-32 border border-gray-300 rounded-lg' }}
                   />
                   {validationErrors[field.label] && (
                     <p className="text-red-500 text-sm mt-1">{validationErrors[field.label]}</p>
@@ -103,7 +103,7 @@ function FormSubmit() {
                   <textarea
                     name={field.label}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-600"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600 transition duration-150"
                     required={field.required}
                   />
                   {validationErrors[field.label] && (
@@ -115,7 +115,7 @@ function FormSubmit() {
                   <select
                     name={field.label}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-600"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600 transition duration-150"
                     required={field.required}
                   >
                     <option value="">Select {field.label}</option>
@@ -135,7 +135,7 @@ function FormSubmit() {
                     type={field.type}
                     name={field.label}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-600"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600 transition duration-150"
                     required={field.required}
                   />
                   {validationErrors[field.label] && (
@@ -147,7 +147,7 @@ function FormSubmit() {
           ))}
           <button
             type="submit"
-            className="w-full py-2 px-4 bg-purple-600 text-white rounded-md hover:bg-purple-700"
+            className="w-full py-3 px-4 bg-purple-600 text-white rounded-lg shadow-md hover:bg-purple-700 transition duration-200"
           >
             Submit
           </button>
