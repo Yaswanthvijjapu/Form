@@ -20,6 +20,11 @@ function Herodashboard() {
     }
   };
 
+  const handleShare = (shareLink) => {
+    navigator.clipboard.writeText(`${window.location.origin}/form-submit/share/${shareLink}`);
+    alert('Link copied to clipboard!');
+  };
+
   if (loading) return <p className="p-6 text-gray-600 text-center">Loading forms...</p>;
   if (error) return <p className="p-6 text-red-500 text-center">Error: {error}</p>;
 
@@ -77,6 +82,12 @@ function Herodashboard() {
                 >
                   Responses
                 </Link>
+                <button
+                  onClick={() => handleShare(form.shareLink)}
+                  className="text-green-600 hover:text-green-700 font-medium"
+                >
+                  Share
+                </button>
                 <button
                   onClick={() => handleDelete(form._id)}
                   className="text-red-600 hover:text-red-700 font-medium"
