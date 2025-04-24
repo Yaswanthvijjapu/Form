@@ -2,7 +2,7 @@
 import React, { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import useFormStore from '../store/useFormStore';
-import useAuthStore from '../store/useAuthStore'; // Add this import
+import useAuthStore from '../store/useAuthStore';
 import { exportResponses } from '../api/responseApi';
 
 function ViewResponses() {
@@ -13,7 +13,6 @@ function ViewResponses() {
     if (formId) fetchResponses(formId);
   }, [formId, fetchResponses]);
 
-  // client/src/pages/ViewResponses.jsx
   const handleExport = async () => {
     try {
       const { token } = useAuthStore.getState();
@@ -32,33 +31,33 @@ function ViewResponses() {
     }
   };
 
-  if (loading) return <p className="p-6 text-gray-600">Loading responses...</p>;
-  if (error) return <p className="p-6 text-red-500">Error: {error}</p>;
+  if (loading) return <p className="p-6 text-gray-600 text-center">Loading responses...</p>;
+  if (error) return <p className="p-6 text-red-500 text-center">Error: {error}</p>;
   if (!responses || responses.length === 0)
-    return <p className="p-6 text-gray-600">No responses found for this form.</p>;
+    return <p className="p-6 text-gray-600 text-center">No responses found for this form.</p>;
 
   return (
-    <div className="max-w-4xl mx-auto mt-10 p-6 bg-white rounded-lg shadow-md">
-      <div className="flex justify-between items-center mb-4">
-        <h1 className="text-2xl font-semibold">Responses for Form</h1>
+    <div className="max-w-5xl mx-auto mt-10 p-6 bg-gray-50 min-h-screen">
+      <div className="flex justify-between items-center mb-8">
+        <h1 className="text-3xl font-bold text-gray-800">Responses for Form</h1>
         <button
           onClick={handleExport}
-          className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+          className="px-4 py-2 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700 transition duration-200"
         >
           Export to CSV
         </button>
       </div>
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto bg-white rounded-xl shadow-lg">
         <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
+          <thead className="bg-gray-100">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
                 Submitted At
               </th>
               {responses[0].answers.map((answer, index) => (
                 <th
                   key={index}
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  className="px-6 py-4 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider"
                 >
                   {answer.fieldId}
                 </th>
@@ -67,7 +66,7 @@ function ViewResponses() {
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
             {responses.map((response, idx) => (
-              <tr key={idx}>
+              <tr key={idx} className="hover:bg-gray-50 transition duration-150">
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                   {new Date(response.submittedAt).toLocaleString()}
                 </td>
