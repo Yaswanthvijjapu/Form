@@ -13,7 +13,7 @@ function ViewResponses() {
     if (formId) fetchResponses(formId);
   }, [formId, fetchResponses]);
 
-  const handleExport = async () => {
+  const handleExportCsv = async () => {
     try {
       const { token } = useAuthStore.getState();
       const blob = await exportResponses(formId, token);
@@ -26,8 +26,29 @@ function ViewResponses() {
       link.parentNode.removeChild(link);
       window.URL.revokeObjectURL(url);
     } catch (err) {
-      console.error('Export error:', err);
+      console.error('Export CSV error:', err);
       alert('Failed to export responses. Please try again.');
+    }
+  };
+
+  const handleExportPdf = async () => {
+    try {
+      const { token } = useAuthStore.getState();
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/responses/export-pdf/${formId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `form_${formId}_responses.pdf`);
+      document.body.appendChild(link);
+      link.click();
+      link.parentNode.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error('Export PDF error:', err);
+      alert('Failed to export responses as PDF. Please try again.');
     }
   };
 
@@ -40,12 +61,20 @@ function ViewResponses() {
     <div className="max-w-5xl mx-auto mt-10 p-6 bg-gray-50 min-h-screen">
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-bold text-gray-800">Responses for Form</h1>
-        <button
-          onClick={handleExport}
-          className="px-4 py-2 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700 transition duration-200"
-        >
-          Export to CSV
-        </button>
+        <div className="space-x-4">
+          <button
+            onClick={handleExportCsv}
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700 transition duration-200"
+          >
+            Export to CSV
+          </button>
+          <button
+            onClick={handleExportPdf}
+            className="px-4 py-2 bg-green-600 text-white rounded-lg shadow-md hover:bg-green-700 transition duration-200"
+          >
+            Export to PDF
+          </button>
+        </div>
       </div>
       <div className="overflow-x-auto bg-white rounded-xl shadow-lg">
         <table className="min-w-full divide-y divide-gray-200">
