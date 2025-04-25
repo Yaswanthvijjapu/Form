@@ -1,0 +1,59 @@
+{
+    "rewrites": [
+      {
+        "source": "/api/auth/register",
+        "destination": "https://form-production-55c8.up.railway.app/api/auth/register"
+      },
+      {
+        "source": "/api/auth/login",
+        "destination": "https://form-production-55c8.up.railway.app/api/auth/login"
+      },
+      {
+        "source": "/api/forms",
+        "destination": "https://form-production-55c8.up.railway.app/api/forms"
+      },
+      {
+        "source": "/api/forms/:formId",
+        "destination": "https://form-production-55c8.up.railway.app/api/forms/:formId"
+      },
+      {
+        "source": "/api/forms/share/:shareLink",
+        "destination": "https://form-production-55c8.up.railway.app/api/forms/share/:shareLink"
+      },
+      {
+        "source": "/api/responses/:formId",
+        "destination": "https://form-production-55c8.up.railway.app/api/responses/:formId"
+      },
+      {
+        "source": "/api/responses/export/:formId",
+        "destination": "https://form-production-55c8.up.railway.app/api/responses/export/:formId"
+      },
+      {
+        "source": "/api/responses/export-pdf/:formId",
+        "destination": "https://form-production-55c8.up.railway.app/api/responses/export-pdf/:formId"
+      },
+      {
+        "source": "/(.*)",
+        "destination": "/"
+      }
+    ],
+    "headers": [
+      {
+        "source": "/(.*)",
+        "headers": [
+          {
+            "key": "Access-Control-Allow-Origin",
+            "value": "*"
+          },
+          {
+            "key": "Access-Control-Allow-Methods",
+            "value": "GET, POST, PUT, DELETE, OPTIONS"
+          },
+          {
+            "key": "Access-Control-Allow-Headers",
+            "value": "Authorization, Content-Type, Accept, X-Requested-With"
+          }
+        ]
+      }
+    ]
+  }
