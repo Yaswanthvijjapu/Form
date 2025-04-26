@@ -100,14 +100,13 @@ function FormEditor() {
   };
 
   const renderFieldPreview = (field) => {
+    // Placeholder for field preview (your existing implementation can stay the same)
     return <div>Preview for {field.type}</div>; // Replace with your actual renderFieldPreview logic
   };
 
   return (
-    <div className="bg-gray-50 py-6 sm:py-8 md:py-12 px-4 sm:px-6 lg:px-8 mt-12 sm:mt-16 overflow-hidden"
-      style={{ height: 'calc(100vh - 80px)' }} // Adjust this based on the navbar height (e.g., 80px)
-    >
-      <div className="max-w-3xl mx-auto bg-white rounded-lg shadow-sm overflow-hidden">
+    <div className="min-h-screen bg-gray-50 py-6 sm:py-8 md:py-12 px-4 sm:px-6 lg:px-8 mt-12 sm:mt-16">
+      <div className="max-w-3xl mx-auto bg-white rounded-lg shadow-sm">
         <form onSubmit={handleSubmit} className="overflow-hidden">
           <div className="border-t-8 border-purple-600 rounded-t-lg p-4 sm:p-6">
             <input
@@ -120,7 +119,7 @@ function FormEditor() {
             />
             <p className="text-sm sm:text-base text-gray-500 mt-2">Form description (optional)</p>
           </div>
-          <div className="p-4 sm:p-6 space-y-4 sm:space-y-6 overflow-auto">
+          <div className="p-4 sm:p-6 space-y-4 sm:space-y-6">
             {fields.map((field) => (
               <div
                 key={field.id}
