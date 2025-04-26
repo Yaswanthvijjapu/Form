@@ -1,4 +1,3 @@
-// client/src/pages/Herodashboard.jsx
 import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import useAuthStore from '../store/useAuthStore';
@@ -31,27 +30,28 @@ function Herodashboard() {
   return (
     <div
       className="max-w-7xl mx-auto mt-20 p-6 bg-gray-50"
-      style={{ minHeight: 'calc(100vh - 80px)' }} // Adjusting the height dynamically using calc
+      style={{ minHeight: 'calc(100vh - 80px)' }}
     >
-      <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold text-gray-800">
+      <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-8 text-center md:text-left">
+        <h1 className="text-3xl font-bold text-gray-800 mb-4 md:mb-0">
           Welcome, {user?.email || 'User'}!
         </h1>
-        <div className="space-x-4">
+        <div className="flex flex-wrap justify-center md:justify-end gap-4">
           <Link
             to="/editor"
-            className="px-4 py-2 bg-purple-600 text-white rounded-lg shadow-md hover:bg-purple-700 transition duration-200"
+            className="px-4 py-2 bg-purple-600 text-white rounded-lg shadow-md hover:bg-purple-700 transition duration-200 w-full sm:w-auto"
           >
             Create New Form
           </Link>
           <button
             onClick={logout}
-            className="px-4 py-2 bg-red-600 text-white rounded-lg shadow-md hover:bg-red-700 transition duration-200"
+            className="px-4 py-2 bg-red-600 text-white rounded-lg shadow-md hover:bg-red-700 transition duration-200 w-full sm:w-auto"
           >
             Logout
           </button>
         </div>
       </div>
+
       {forms.length === 0 ? (
         <p className="text-gray-600 text-center text-lg">No forms created yet. Start by creating a new form!</p>
       ) : (
