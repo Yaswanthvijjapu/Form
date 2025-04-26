@@ -14,18 +14,18 @@ function Navbar() {
   };
 
   return (
-    <nav className="bg-purple-600 text-white shadow-lg sticky top-0 z-50">
+    <nav className="bg-purple-600 text-white shadow-lg fixed top-0 left-0 w-full z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center py-4">
+        <div className="flex justify-between items-center py-2">
           {/* Logo and Brand Name */}
           <div className="flex items-center space-x-3">
             <Link to="/" className="flex items-center">
               <img
-                src="https://via.placeholder.com/40x40.png?text=FB"
+                src="/logo.png" // Replace with your logo path
                 alt="Form Builder Logo"
-                className="h-8 w-8 sm:h-10 sm:w-10 rounded-full"
+                className="h-12 w-12 sm:h-14 sm:w-14 rounded-full"
               />
-              <span className="ml-2 text-lg sm:text-xl font-bold tracking-tight">
+              <span className="ml-2 text-lg sm:text-xl lg:text-2xl font-bold tracking-tight">
                 Form Builder
               </span>
             </Link>
@@ -91,7 +91,7 @@ function Navbar() {
                 </Link>
                 <button
                   onClick={handleLogout}
-                  className="block md:inline-block text-white hover:bg-purple-700 px-3 py-2 rounded-md text-sm font-medium transition duration-200 focus:outline-none w-full md:w-auto"
+                  className="block md:inline-block text-white hover:bg-purple-700 px-3 py-2 rounded-md text-1xl font-medium transition duration-200 focus:outline-none w-full md:w-auto"
                 >
                   Logout
                 </button>
@@ -100,7 +100,7 @@ function Navbar() {
               <>
                 <Link
                   to="/login"
-                  className="block md:inline-block text-white hover:bg-purple-700 px-3 py-2 rounded-md text-sm font-medium transition duration-200"
+                  className="block md:inline-block text-white hover:bg-purple-700 px-3 py-2 rounded-md text-1xl font-medium transition duration-200"
                 >
                   Login
                 </Link>
@@ -117,7 +117,6 @@ function Navbar() {
       </div>
     </nav>
   );
-
 }
 
 export default Navbar;
