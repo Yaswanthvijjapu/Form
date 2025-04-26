@@ -29,7 +29,10 @@ function Herodashboard() {
   if (error) return <p className="p-6 text-red-500 text-center">Error: {error}</p>;
 
   return (
-    <div className="max-w-5xl mx-auto mt-10 p-6 bg-gray-50 min-h-screen">
+    <div
+      className="max-w-7xl mx-auto mt-20 p-6 bg-gray-50"
+      style={{ minHeight: 'calc(100vh - 80px)' }} // Adjusting the height dynamically using calc
+    >
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-bold text-gray-800">
           Welcome, {user?.email || 'User'}!
@@ -52,7 +55,7 @@ function Herodashboard() {
       {forms.length === 0 ? (
         <p className="text-gray-600 text-center text-lg">No forms created yet. Start by creating a new form!</p>
       ) : (
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {forms.map((form) => (
             <div
               key={form._id}
