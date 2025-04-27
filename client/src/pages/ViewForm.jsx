@@ -1,7 +1,7 @@
 // client/src/pages/ViewForm.jsx
-import React, { useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
-import useFormStore from '../store/useFormStore';
+import React, { useEffect } from "react";
+import { useParams, Link } from "react-router-dom";
+import useFormStore from "../store/useFormStore";
 
 function ViewForm() {
   const { id } = useParams();
@@ -17,11 +17,11 @@ function ViewForm() {
 
   const renderFieldPreview = (field) => {
     switch (field.type) {
-      case 'text':
-      case 'email':
-      case 'number':
-      case 'phone':
-      case 'url':
+      case "text":
+      case "email":
+      case "number":
+      case "phone":
+      case "url":
         return (
           <input
             type={field.type}
@@ -30,8 +30,8 @@ function ViewForm() {
             className="w-full px-3 py-2 border-b border-gray-300 bg-transparent focus:outline-none"
           />
         );
-      case 'textarea':
-      case 'address':
+      case "textarea":
+      case "address":
         return (
           <textarea
             placeholder={field.label}
@@ -39,7 +39,7 @@ function ViewForm() {
             className="w-full px-3 py-2 border-b border-gray-300 bg-transparent focus:outline-none h-24"
           />
         );
-      case 'select':
+      case "select":
         return (
           <select
             disabled
@@ -53,7 +53,7 @@ function ViewForm() {
             ))}
           </select>
         );
-      case 'radio':
+      case "radio":
         return (
           <div className="space-y-4">
             {field.options?.map((option, idx) => (
@@ -70,7 +70,7 @@ function ViewForm() {
             ))}
           </div>
         );
-      case 'checkbox':
+      case "checkbox":
         return (
           <div className="flex items-center">
             <input
@@ -81,8 +81,8 @@ function ViewForm() {
             <label className="ml-3 text-gray-700">{field.label}</label>
           </div>
         );
-      case 'date':
-      case 'time':
+      case "date":
+      case "time":
         return (
           <input
             type={field.type}
@@ -90,13 +90,13 @@ function ViewForm() {
             className="w-full px-3 py-2 border-b border-gray-300 bg-transparent focus:outline-none"
           />
         );
-      case 'file':
+      case "file":
         return (
           <div className="w-full px-3 py-2 border border-dashed border-gray-300 rounded-md text-gray-500 text-center">
             File Upload Placeholder
           </div>
         );
-      case 'rating':
+      case "rating":
         return (
           <div className="flex space-x-2">
             {[1, 2, 3, 4, 5].map((star) => (
@@ -111,7 +111,7 @@ function ViewForm() {
             ))}
           </div>
         );
-      case 'signature':
+      case "signature":
         return (
           <div className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-500 text-center">
             Signature Placeholder
@@ -123,7 +123,7 @@ function ViewForm() {
   };
 
   return (
-    <div className="max-w-3xl mx-auto mt-10 p-6 bg-white rounded-lg shadow-md">
+    <div className="max-w-5xl mx-auto mt-24 px-4 sm:px-6 lg:px-8 py-8 bg-white rounded-2xl shadow-md min-h-screen">
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-2xl font-semibold text-gray-800">{form.title}</h1>
         <Link
@@ -135,7 +135,7 @@ function ViewForm() {
       </div>
       <div className="space-y-4">
         <p className="text-gray-600">
-          <strong>Shareable Link:</strong>{' '}
+          <strong>Shareable Link:</strong>{" "}
           <a
             href={`http://localhost:5173/form-submit/share/${form.shareLink}`}
             target="_blank"
@@ -147,31 +147,36 @@ function ViewForm() {
         </p>
         {form.createdAt && (
           <p className="text-gray-600">
-            <strong>Created:</strong>{' '}
+            <strong>Created:</strong>{" "}
             {new Date(form.createdAt).toLocaleString()}
           </p>
         )}
         {form.updatedAt && (
           <p className="text-gray-600">
-            <strong>Last Updated:</strong>{' '}
+            <strong>Last Updated:</strong>{" "}
             {new Date(form.updatedAt).toLocaleString()}
           </p>
         )}
         <div>
-          <h2 className="text-lg font-medium mb-2 text-gray-700">Form Fields</h2>
+          <h2 className="text-lg font-semibold mb-4 text-gray-700">
+            Form Fields
+          </h2>
           {form.fields.length > 0 ? (
             <div className="space-y-6">
               {form.fields.map((field, index) => (
-                <div key={index} className="border p-4 rounded-md shadow-sm">
+                <div key={index} className="border p-4 rounded-lg shadow-sm">
                   <div className="flex justify-between items-center mb-2">
                     <label className="text-sm font-medium text-gray-700">
-                      {field.label} {field.required && <span className="text-red-500">*</span>}
+                      {field.label}{" "}
+                      {field.required && (
+                        <span className="text-red-500">*</span>
+                      )}
                     </label>
-                    <span className="text-sm text-gray-500">{field.type}</span>
+                    <span className="text-xs text-gray-500">{field.type}</span>
                   </div>
                   {field.options && (
-                    <p className="text-sm text-gray-600 mb-2">
-                      Options: {field.options.join(', ')}
+                    <p className="text-xs text-gray-600 mb-2">
+                      Options: {field.options.join(", ")}
                     </p>
                   )}
                   <div className="mt-2">{renderFieldPreview(field)}</div>
@@ -183,13 +188,16 @@ function ViewForm() {
           )}
         </div>
         <div>
-          <h2 className="text-lg font-medium mb-2 text-gray-700">Form Preview</h2>
+          <h2 className="text-lg font-medium mb-2 text-gray-700">
+            Form Preview
+          </h2>
           <div className="p-4 border rounded-md shadow-sm bg-gray-50">
             <h3 className="text-xl font-semibold mb-4">{form.title}</h3>
             {form.fields.map((field, index) => (
               <div key={index} className="mb-4">
                 <label className="block text-sm font-medium text-gray-700">
-                  {field.label} {field.required && <span className="text-red-500">*</span>}
+                  {field.label}{" "}
+                  {field.required && <span className="text-red-500">*</span>}
                 </label>
                 <div className="mt-1">{renderFieldPreview(field)}</div>
               </div>
