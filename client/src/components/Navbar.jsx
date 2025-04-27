@@ -26,7 +26,7 @@ function Navbar() {
                 className="h-12 w-12 sm:h-14 sm:w-14 rounded-full"
               />
               <span className="ml-2 text-lg sm:text-xl lg:text-2xl font-bold tracking-tight">
-                Form Builder
+                Formify
               </span>
             </Link>
           </div>
