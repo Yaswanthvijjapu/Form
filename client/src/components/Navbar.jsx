@@ -12,6 +12,7 @@ function Navbar() {
     logout();
     navigate('/login');
   };
+  
 
   return (
     <nav className="bg-purple-600 text-white shadow-lg fixed top-0 left-0 w-full z-50">
