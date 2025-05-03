@@ -25,7 +25,6 @@ function Home() {
           Create, customize, and manage forms with ease. Collect responses, streamline workflows, and grow your business—all in one place.
         </p>
 
-        {/* Get Started Button */}
         <div>
           <button
             onClick={handleGetStarted}
